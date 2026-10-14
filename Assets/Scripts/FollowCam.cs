@@ -5,7 +5,7 @@ using UnityEngine;
 public class FollowCam : MonoBehaviour
 {
     static private FollowCam S; // Singleton
-    static public GameObject POI; // The static point of interest
+    static public GameObject POI; // Point of interest the camera eases toward
 
     public enum eView { none, slingshot, castle, both };
 
@@ -24,18 +24,10 @@ public class FollowCam : MonoBehaviour
     } 
 
     void FixedUpdate () {
-        /*
-        // A single-line if statement doesn't require braces
-        if (POI == null) return; // if there is no POI, then return
-
-        // Get the position of the poi
-        Vector3 destination = POI.transform.position;
-        */
-
         Vector3 destination = Vector3.zero;
 
         if ( POI != null ) {
-            // If the POI has a Rigidbody, check to see if it is sleeping
+            // A sleeping rigidbody has settled, so stop tracking it.
             Rigidbody poiRigid = POI.GetComponent<Rigidbody>();
             if ( ( poiRigid != null ) && poiRigid.IsSleeping() ) {
                 POI = null;
@@ -46,14 +38,11 @@ public class FollowCam : MonoBehaviour
             destination = POI.transform.position;
         }
 
-        // Limit the minimum values of destination.x & destination.y
         destination.x = Mathf.Max( minXY.x, destination.x );
         destination.y = Mathf.Max( minXY.y, destination.y );
-        // Interpolate from the current Camera position toward destination
         destination = Vector3.Lerp(transform.position, destination, easing);
-        // Force destination.z to be camZ to keep the camera far enough away
+        // Lerp would otherwise pull z toward 0 and park the camera on the action.
         destination.z = camZ;
-        // Set the camera to the destination
         transform.position = destination;
         Camera.main.orthographicSize = destination.y + 10;
     }

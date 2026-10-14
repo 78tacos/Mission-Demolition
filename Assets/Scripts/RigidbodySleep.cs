@@ -13,6 +13,7 @@ public class RigidbodySleep : MonoBehaviour
     }
 
     void FixedUpdate() {
+        // Stacked castle pieces wake on spawn; hold them asleep for a few ticks.
         if ( sleepCountdown > 0 ) {
             rigid.Sleep();
             sleepCountdown--;

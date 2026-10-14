@@ -23,13 +23,12 @@ public class Bomb : MonoBehaviour
 
     void Start()
     {
-        // Auto-explode after delay if not exploded earlier
+        // A delay of 0 leaves the timer off; collision still detonates.
         if (delay > 0f) Invoke(nameof(Explode), delay);
     }
 
     void OnCollisionEnter(Collision other)
     {
-        // Explode on first collision
         if (!exploded) {
             Explode();
         }
@@ -40,12 +39,10 @@ public class Bomb : MonoBehaviour
         if (exploded) return;
         exploded = true;
 
-        // spawn VFX
         if (explosionPrefab != null) {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         }
 
-        // play sound globally (2D, not positional)
         if (explosionSound != null) {
             GameObject audioObj = new GameObject("ExplosionSound");
             AudioSource audioSource = audioObj.AddComponent<AudioSource>();
@@ -56,7 +53,6 @@ public class Bomb : MonoBehaviour
             Destroy(audioObj, explosionSound.length);
         }
 
-        // apply physics explosion
         Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, affectLayers);
         foreach (Collider c in colliders) {
             Rigidbody rb = c.GetComponent<Rigidbody>();
@@ -64,14 +60,13 @@ public class Bomb : MonoBehaviour
                 rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, upModifier, ForceMode.Impulse);
             }
 
-            // optional: damage destructible objects by calling an interface or method
+            // Props opt in by implementing IDestructible.
             var destruct = c.GetComponent<IDestructible>();
             if (destruct != null) {
-                destruct.ApplyDamage(1); // simple 1-damage; you can expand
+                destruct.ApplyDamage(1);
             }
         }
 
-        // destroy bomb object
         Destroy(gameObject);
     }
 }

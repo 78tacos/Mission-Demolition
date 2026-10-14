@@ -13,7 +13,6 @@ public class CloudCover : MonoBehaviour
     public Vector2  scaleRange = new Vector2( 1, 4 );
 
 
-    // Start is called before the first frame update
     void Start()
     {
         Transform parentTrans = this.transform;
@@ -23,7 +22,6 @@ public class CloudCover : MonoBehaviour
         float scaleMult;
 
         for( int i = 0; i < numClouds; i++) {
-            //Create a new GameObject (from scratch!) and get its Transform
             cloudGO = new GameObject();
             cloudTrans = cloudGO.transform;
             sRend = cloudGO.AddComponent<SpriteRenderer>();

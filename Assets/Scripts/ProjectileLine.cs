@@ -12,7 +12,6 @@ public class ProjectileLine : MonoBehaviour
     private bool            _drawing = true;
     private Projectile      _projectile;
 
-    // Start is called before the first frame update
     void Start()
     {
         _line = GetComponent<LineRenderer>();
@@ -24,13 +23,12 @@ public class ProjectileLine : MonoBehaviour
         ADD_LINE( this );
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         if ( _drawing ) {
             _line.positionCount++;
             _line.SetPosition( _line.positionCount - 1, transform.position );
-            // if the Projectile Rigidbody is sleeping, stop drawing
+            // Stop tracing once the projectile has settled.
             if ( _projectile != null ) {
                 if ( !_projectile.awake ) {
                     _drawing = false;
@@ -42,19 +40,17 @@ public class ProjectileLine : MonoBehaviour
     }
 
     private void OnDestroy() {
-        // Remove this ProjectileLine from PROJ_LINES
         PROJ_LINES.Remove( this );
     }
 
     static void ADD_LINE( ProjectileLine newLine ) {
         Color col;
-        // Iterate over all the old lines and dim them
+        // Fade older trails so the latest shot stays visible.
         foreach ( ProjectileLine pl in PROJ_LINES ) {
             col = pl._line.startColor;
             col = col * DIM_MULT;
             pl._line.startColor = pl._line.endColor = col;
         }
-        // Add newLine to the list
         PROJ_LINES.Add( newLine );
     }
 }
