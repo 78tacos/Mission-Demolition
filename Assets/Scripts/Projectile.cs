@@ -16,11 +16,10 @@ public class Projectile : MonoBehaviour
     }
 
     private Vector3         prevPos;
-    // This private List stores the histroy of Projectile's move distance
+    // Recent per-step distances, so a shot can be treated as settled.
     private List<float>     deltas = new List<float>();
     private Rigidbody       rigid;
 
-    // Start is called before the first frame update
     void Start()
     {
         rigid = GetComponent<Rigidbody>();
@@ -42,15 +41,13 @@ public class Projectile : MonoBehaviour
             deltas.RemoveAt( 0 );
         }
 
-        // Iterate over deltas and find the greatest one
         float maxDelta = 0;
         foreach( float f in deltas ) {
             if ( f > maxDelta ) maxDelta = f;
         }
 
-        // If the Projectile hasn't moved more than the sleepThreshold
+        // Settled when the whole lookback window is within the physics sleep threshold.
         if ( maxDelta <= Physics.sleepThreshold ) {
-            // Set awake to False and put the Rigidbody to sleep
             awake = false;
             rigid.Sleep();
         }
